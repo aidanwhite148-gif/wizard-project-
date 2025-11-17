@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 public class Fireball : MonoBehaviour
@@ -6,11 +7,14 @@ public class Fireball : MonoBehaviour
     public float bulletspeed;
     public float firerate, bulletDamage;
     public bool isAuto;
+    public GameObject firePoint;
+    public GameObject bullet;
 
     [Header("initial Setup")]
     public Transform bulletSpawnTransform;
     public GameObject bulletPrefab;
 
+    [System.Obsolete]
     private void Update()
     {
         if (isAuto)
@@ -22,16 +26,23 @@ public class Fireball : MonoBehaviour
         }
         else
         {
-            if (Input.GetButtonDown("fire"))
+            if (Input.GetKeyDown(KeyCode.Z))
             {
-                Shoot();
+                FireballFunc();
             }
 
         }
     }
 
-    void Shoot()
+
+    private void FireballFunc()
     {
-        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnTransform.parent.position, Quaternion.identity);
+        Rigidbody rb = Instantiate(bulletPrefab, bulletSpawnTransform.position , bulletSpawnTransform.rotation).GetComponent<Rigidbody>();
+        rb.AddForce(transform.forward *20, ForceMode.Impulse);
+
     }
+        
+    
 }
+
+  
