@@ -52,7 +52,7 @@ public class enemy : MonoBehaviour
 
         walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
-        if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
+        if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround)) ;
 
 
     }
@@ -70,6 +70,8 @@ public class enemy : MonoBehaviour
         {
             Rigidbody rb = Instatiate(projectile,transform.position, Quaternion.identity).GetComponent<Rigidbody>();
 
+            rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
+            rb.AddForce(transform.up * 8f, ForceMode.Impulse);
 
 
             alreadyAttacked = true;
@@ -85,7 +87,24 @@ public class enemy : MonoBehaviour
 
     }
 
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
 
+        if (health <= 0) Invoke(nameof(DestroyEnemy), .5f);
+    }
+
+    private void DestroyEnemy()
+    {
+        Destroy(gameObject);
+    }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, sightRange);
+    }
 
 
 
