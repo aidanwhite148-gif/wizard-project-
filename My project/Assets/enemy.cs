@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class enemy : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
     public NavMeshAgent agent;
     public Transform player;
@@ -18,8 +18,7 @@ public class enemy : MonoBehaviour
     public float sightRange, attackRange;
     public bool playerInSightRange;
     private bool playerInAttackRange;
-
-    public Rigidbody Instatate { get; private set; }
+    private int health;
 
     private void Awake()
     {
@@ -36,6 +35,7 @@ public class enemy : MonoBehaviour
         if (playerInSightRange && !playerInAttackRange) ChasePlayer();
         if (playerInAttackRange && !playerInSightRange) AttackPlayer();
     }
+
     private void Patroling()
     {
         if (!walkPointSet) SearchWalkPoint();
@@ -45,17 +45,26 @@ public class enemy : MonoBehaviour
 
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
 
-        if(distanceToWalkPoint.magnitufr <1f)
+        if (distanceToWalkPoint.magnitude < 1f)
             walkPointSet = false;
+    }
+
+    private void SearchWalkPoint()
+    {
         float randomZ = Random.Range(-walkPointRange, walkPointRange);
         float randomX = Random.Range(-walkPointRange, walkPointRange);
 
-        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
+        // Start slightly above so the downward raycast can detect the ground reliably
+        Vector3 potentialPoint = new(transform.position.x + randomX, transform.position.y + 1f, transform.position.z + randomZ);
 
-        if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround)) ;
-
-
+        // Raycast down to confirm the point is on the ground layer
+        if (Physics.Raycast(potentialPoint, Vector3.down, out RaycastHit hit, 2f, whatIsGround))
+        {
+            walkPoint = new Vector3(potentialPoint.x, hit.point.y, potentialPoint.z);
+            walkPointSet = true;
+        }
     }
+
     private void ChasePlayer()
     {
        agent.SetDestination(player.position);
@@ -68,23 +77,19 @@ public class enemy : MonoBehaviour
 
         if (!alreadyAttacked)
         {
-            Rigidbody rb = Instatiate(projectile,transform.position, Quaternion.identity).GetComponent<Rigidbody>();
+            Rigidbody rb = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Rigidbody>();
 
             rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
             rb.AddForce(transform.up * 8f, ForceMode.Impulse);
 
-
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
-       
-
-
     }
+
     private void ResetAttack()
     {
         alreadyAttacked = false; 
-
     }
 
     public void TakeDamage(int damage)
@@ -105,7 +110,4 @@ public class enemy : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
     }
-
-
-
 }
