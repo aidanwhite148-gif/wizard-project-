@@ -1,10 +1,11 @@
-using System.Diagnostics;
+csharp Assets\Fireball.cs
 using UnityEngine;
 using System.Collections;
+
 public class Fireball : MonoBehaviour
 {
     [Header("bullet variables")]
-    public float bulletspeed;
+    public float bulletspeed = 20f;
     public float firerate, bulletDamage;
     public bool isAuto;
     public GameObject firePoint;
@@ -14,14 +15,13 @@ public class Fireball : MonoBehaviour
     public Transform bulletSpawnTransform;
     public GameObject bulletPrefab;
 
-    [System.Obsolete]
     private void Update()
     {
         if (isAuto)
         {
             if (Input.GetButtonDown("fire"))
             {
-
+                // handle auto fire if needed
             }
         }
         else
@@ -30,25 +30,29 @@ public class Fireball : MonoBehaviour
             {
                 FireballFunc();
             }
-
         }
     }
 
-
-    private void FireballFunc()
+    // made public so other controllers can call it
+    public void FireballFunc()
     {
-        Rigidbody rb = Instantiate(bulletPrefab, bulletSpawnTransform.position , bulletSpawnTransform.rotation).GetComponent<Rigidbody>();
-        rb.AddForce(transform.forward *20, ForceMode.Impulse);
+        if (bulletPrefab == null || bulletSpawnTransform == null) return;
 
+        Rigidbody rb = Instantiate(bulletPrefab, bulletSpawnTransform.position, bulletSpawnTransform.rotation)
+                         .GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            // use configured speed and spawn transform forward
+            rb.AddForce(bulletSpawnTransform.forward * bulletspeed, ForceMode.Impulse);
+        }
     }
-
-
 }
 
 public class CooldownController : MonoBehaviour
 {
-    public float attackCooldown = 8f; // Cooldown duration in seconds
+    public float attackCooldown = 2f; // Cooldown duration in seconds
     private bool canAttack = true;
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space) && canAttack)
@@ -57,11 +61,23 @@ public class CooldownController : MonoBehaviour
             StartCoroutine(Cooldown());
         }
     }
+
     void Attack()
     {
-        // Attack logic here
-        UnityEngine.Debug.Log("Attack!");
+        // Call Fireball.Spawn
+        Fireball fb = FindObjectOfType<Fireball>();
+        if (fb != null)
+        {
+            fb.FireballFunc();
+        }
+        else
+        {
+            Debug.LogWarning("No Fireball component found in scene.");
+        }
+
+        Debug.Log("Attack!");
     }
+
     IEnumerator Cooldown()
     {
         canAttack = false;
