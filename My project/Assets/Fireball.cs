@@ -1,6 +1,8 @@
+﻿using System;
 using System.Diagnostics;
 using UnityEngine;
-using System.Collections;
+
+
 public class Fireball : MonoBehaviour
 {
     [Header("bullet variables")]
@@ -45,27 +47,4 @@ public class Fireball : MonoBehaviour
 
 }
 
-public class CooldownController : MonoBehaviour
-{
-    public float attackCooldown = 8f; // Cooldown duration in seconds
-    private bool canAttack = true;
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && canAttack)
-        {
-            Attack();
-            StartCoroutine(Cooldown());
-        }
-    }
-    void Attack()
-    {
-        // Attack logic here
-        UnityEngine.Debug.Log("Attack!");
-    }
-    IEnumerator Cooldown()
-    {
-        canAttack = false;
-        yield return new WaitForSeconds(attackCooldown);
-        canAttack = true;
-    }
-}
+
