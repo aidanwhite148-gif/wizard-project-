@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 
-public class UnitHealth
+public class UnitHealth : MonoBehaviour
 {
     int _currentHealth;
     int _currentMaxHealth;
@@ -20,17 +20,7 @@ public class UnitHealth
         }
 
     }
-    public int Health
-    {
-        get
-        {
-            return _currentHealth;
-        }
-        set
-        {
-            _currentHealth = value;
-        }
-    }
+
 
     public int MaxHealth
     {
@@ -44,10 +34,10 @@ public class UnitHealth
         }
     }
 
-    public UnitHealth(int maxHealth)
+    public UnitHealth(int Health, int MaxHealth)
     {
         _currentHealth = Health;
-        _currentMaxHealth = maxHealth;
+        _currentMaxHealth = MaxHealth;
     }
     public void DmgUnit(int dmgAmount)
     {
