@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using UnityEngine;
-using System.Collections;
+
+
 public class Fireball : MonoBehaviour
 {
     [Header("bullet variables")]
@@ -44,3 +46,5 @@ public class Fireball : MonoBehaviour
 
 
 }
+
+
